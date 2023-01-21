@@ -11,6 +11,9 @@ const app = express()
 app.set('views', __dirname + '/views')
 app.set('view engine', 'jsx')
 app.engine('jsx', require('express-react-views').createEngine())
+// MIDDLEWARE for setting up static assets
+app.use(express.static('public'))
+
 
 // ROUTES
 app.get('/', (req, res) => {
@@ -27,3 +30,7 @@ app.listen(PORT, () => {
   console.log('listening on port', PORT);
 })
 
+// 404 Page
+app.get('*', (req, res) => {
+  res.send('404')
+})
