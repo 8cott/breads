@@ -4,28 +4,29 @@ const Bread = require('../models/bread.js')
 
 // ---INDEX---
 // GET
-breads.get('/', (req, res) => {
-    res.render('Index',
-      {
-        breads: Bread,
-        title: 'Index Page'
-      }
-    )
-})
+breads.get('/', async(req, res) => {
+  const foundBreads = await Bread.find()
+  // console.log('🚀 ~ file: breads_controller.js:9 ~ breads.get ~ foundBreads', foundBreads)
+  res.render('index', {
+      breads: foundBreads,
+      title: 'Index Page',
+    });
+});
+
 
 // CREATE
 breads.post('/', (req, res) => {
-  if (!req.body.image) {
-    req.body.image = 'https://images.unsplash.com/photo-1517686469429-8bdb88b9f907?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80'
+  if(!req.body.image) {
+      req.body.image = undefined 
   }
   if(req.body.hasGluten === 'on') {
     req.body.hasGluten = true
   } else {
     req.body.hasGluten = false
   }
-  Bread.push(req.body)
-  res.redirect('/breads')
+  Bread.create(req.body).then(() => res.redirect('/breads')).catch(res.send('Rejected!'))
 })
+
 
 // ---NEW---
 // GET
@@ -34,56 +35,54 @@ breads.get('/new', (req, res) => {
 })
 
 // EDIT
-breads.get('/:indexArray/edit', (req, res) => {
+breads.get('/:id/edit', async(req, res) => {
+  const bread = await Bread.findById(req.params.id)
   res.render('edit', {
-    bread: Bread[req.params.indexArray],
-    index: req.params.indexArray
+    bread: bread
   })
 })
 
-// ---SHOW---
+// ---SHOW--- 
 // GET
-breads.get('/:arrayIndex', (req, res) => {
-  if (Bread[req.params.arrayIndex]) {
-    res.render('Show', {
-      bread:Bread[req.params.arrayIndex],
-      index: req.params.arrayIndex,
+breads.get('/:id', (req, res) => {
+  // Breads Part 7 wanted me to change :arrayIndext to /:id ------
+  Bread.findById(req.params.id).then(foundBread => {
+      res.render('show', { bread: foundBread })
     })
-  } else {
-    res.render('404')
-  }
+    .catch(err => {
+      res.send('404')
+    })
+})
+
+// BONUS Doesn't work
+breads.get('/data/seed', (req, res) => {
+  Bread.insertMany([breadSeed])
+    .then(createdBreads => {
+      res.redirect('/breads')
+    })
 })
 
 // UPDATE
-breads.put('/:arrayIndex', (req, res) => {
-  console.log(req.body)
+breads.put('/:id', async(req, res) => {
   if(req.body.hasGluten === 'on'){
     req.body.hasGluten = true
   } else {
     req.body.hasGluten = false
   }
-  Bread[req.params.arrayIndex] = req.body
-  res.redirect(`/breads/${req.params.arrayIndex}`)
-})
-
-// DELETE
-breads.delete('/:arrayIndex', (req, res) => {
-  Bread.splice(req.params.indexArray, 1)
-  res.status(303).redirect('/breads')
+  await Bread.findByIdAndUpdate(req.params.id, req.body, { new: true }) 
+    .then(updatedBread => {
+      console.log(updatedBread) 
+      res.redirect(`/breads/${req.params.id}`) 
+    })
 })
 
 
 // DELETE
-// breads.delete('/:indexArray', (req, res) => {
-//   if (Bread[req.params.indexArray]){
-//     Bread.splice(req.params.indexArray, 1)
-//   res.status(303).redirect('/breads')
-//   }  else {
-//     res.send('Bread DNE')
-//   }
-  
-// })
-
-
+breads.delete('/:id', async(req, res) => {
+  await Bread.findByIdAndDelete(req.params.id) 
+    .then(deletedBread => { 
+      res.status(303).redirect('/breads')
+    })
+})
 
 module.exports = breads
