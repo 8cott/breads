@@ -47,6 +47,8 @@ breads.get('/:id/edit', async(req, res) => {
 breads.get('/:id', (req, res) => {
   // Breads Part 7 wanted me to change :arrayIndext to /:id ------
   Bread.findById(req.params.id).then(foundBread => {
+    const bakedBy = foundBread.getBakedBy() 
+        console.log(bakedBy)
       res.render('show', { bread: foundBread })
     })
     .catch(err => {

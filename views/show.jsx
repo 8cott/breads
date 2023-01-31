@@ -7,7 +7,7 @@ function Show ({bread, index}) {
       return (
         <Default>
   <h3>{bread.name}</h3>
-  <p>Baked by {bread.baker}</p>
+  <p>{bread.getBakedBy()}</p>      
   <img src={bread.image} alt={bread.name} />
   <p>
     and it
@@ -30,3 +30,5 @@ function Show ({bread, index}) {
   }
 
 module.exports = Show
+
+
