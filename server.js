@@ -5,6 +5,7 @@ const favicon = require('serve-favicon')
 const path = require('path')
 const mongoose = require('mongoose')
 
+
 // CONFIGURATION
 require('dotenv').config()
 const PORT = process.env.PORT
@@ -29,9 +30,13 @@ app.get('/', (req, res) => {
     res.send('Welcome to an Awesome App about Breads')
   })
   
-// Breads
-  const breadsController = require('./controllers/breads_controller.js')
-  app.use('/breads', breadsController)
+// breads
+const breadsController = require('./controllers/breads_controller.js')
+app.use('/breads', breadsController)
+
+// bakers 
+const bakersController = require('./controllers/bakers_controller.js')
+app.use('/bakers', bakersController)
 
 // LISTEN
 app.listen(PORT, () => {

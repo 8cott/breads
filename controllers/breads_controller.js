@@ -1,21 +1,40 @@
 const express = require('express')
 const breads = express.Router()
 const Bread = require('../models/bread.js')
+// somewhere at the top with the other dependencies 
+const Baker = require('../models/baker.js')
 
-// ---INDEX---
-// GET
-breads.get('/', async(req, res) => {
-  const foundBreads = await Bread.find()
-  // console.log('🚀 ~ file: breads_controller.js:9 ~ breads.get ~ foundBreads', foundBreads)
-  res.render('index', {
-      breads: foundBreads,
-      title: 'Index Page',
-    });
-});
+// Index:
+breads.get('/', (req, res) => {
+  Baker.find()
+    .then(foundBakers => {
+      Bread.find()
+      .then(foundBreads => {
+          res.render('index', {
+              breads: foundBreads,
+              bakers: foundBakers,
+              title: 'Index Page'
+          })
+      })
+    })
+})
 
+
+// // ---INDEX---
+// // GET
+// breads.get('/', async(req, res) => {
+//   const foundBakers = await Baker.find()
+//   const foundBreads = await Bread.find()
+//   // console.log('🚀 ~ file: breads_controller.js:9 ~ breads.get ~ foundBreads', foundBreads)
+//   res.render('index', {
+//       breads: foundBreads,
+//       bakers: foundBakers,
+//       title: 'Index Page',
+//     });
+// });
 
 // CREATE
-breads.post('/', (req, res) => {
+breads.post('/', async(req, res) => {
   if(!req.body.image) {
       req.body.image = undefined 
   }
@@ -24,37 +43,49 @@ breads.post('/', (req, res) => {
   } else {
     req.body.hasGluten = false
   }
-  Bread.create(req.body).then(() => res.redirect('/breads')).catch(res.send('Rejected!'))
+  await Bread.create(req.body)
+  res.redirect('/breads')
 })
-
 
 // ---NEW---
 // GET
-breads.get('/new', (req, res) => {
-  res.render('new')
-})
+breads.get('/new', async(req, res) => {
+  foundBakers = await Baker.find()
+          res.render('new', {
+              bakers: foundBakers
+          })
+    })
 
 // EDIT
-breads.get('/:id/edit', async(req, res) => {
-  const bread = await Bread.findById(req.params.id)
-  res.render('edit', {
-    bread: bread
-  })
+breads.get('/:id/edit', (req, res) => {
+  Baker.find()
+    .then(foundBakers => {
+        Bread.findById(req.params.id)
+          .then(foundBread => {
+            res.render('edit', {
+                bread: foundBread, 
+                bakers: foundBakers 
+            })
+          })
+    })
 })
 
-// ---SHOW--- 
-// GET
+// SHOW
 breads.get('/:id', (req, res) => {
-  // Breads Part 7 wanted me to change :arrayIndext to /:id ------
-  Bread.findById(req.params.id).then(foundBread => {
-    const bakedBy = foundBread.getBakedBy() 
-        console.log(bakedBy)
-      res.render('show', { bread: foundBread })
-    })
-    .catch(err => {
-      res.send('404')
-    })
+  Bread.findById(req.params.id)
+      .populate('baker')
+      .then(foundBread => {
+        res.render('show', {
+            bread: foundBread
+        })
+      })
+      .catch(err => {
+        res.send('404')
+      })
 })
+
+
+
 
 // BONUS Doesn't work
 breads.get('/data/seed', (req, res) => {

@@ -8,22 +8,22 @@ function Show ({bread, index}) {
         <Default>
   <h3>{bread.name}</h3>
   <p>{bread.getBakedBy()}</p>      
-  <img src={bread.image} alt={bread.name} />
   <p>
-    and it
+    ...and it
     {
       bread.hasGluten
-      ? <span> does </span>
-      : <span> does NOT </span>
+      ? <span> <u>does</u> </span>
+      : <span> <u>does NOT</u> </span>
     }
     have gluten.
   </p>
-  <li>
-    <a href="/breads">Go home</a>
-  </li>
+  <img src={bread.image} alt={bread.name} />
+  <br />
+  <a href={`/breads/`}><button>Home</button></a>
+  <br />
   <a href={`/breads/${bread.id}/edit`}><button>Edit</button></a>
-  <form action={`/breads/${bread.id}?_method=DELETE`} method="POST">
-    <input type='submit' value="DELETE"/>
+  <form action={`/breads/${bread.id}?_method=DELETE`} method='POST'>
+    <input type='submit' value='DELETE'/>
   </form>
 </Default>
       )
