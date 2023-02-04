@@ -5,33 +5,16 @@ const Bread = require('../models/bread.js')
 const Baker = require('../models/baker.js')
 
 // Index:
-breads.get('/', (req, res) => {
-  Baker.find()
-    .then(foundBakers => {
-      Bread.find()
-      .then(foundBreads => {
-          res.render('index', {
-              breads: foundBreads,
-              bakers: foundBakers,
-              title: 'Index Page'
-          })
-      })
-    })
+breads.get('/', async (req, res) => {
+  const foundBakers = await Baker.find().lean() 
+  const foundBreads = await Bread.find().limit(12).lean() 
+  res.render('index', {
+    breads: foundBreads,
+    bakers: foundBakers,
+    title: 'Index Page'
+  })
 })
 
-
-// // ---INDEX---
-// // GET
-// breads.get('/', async(req, res) => {
-//   const foundBakers = await Baker.find()
-//   const foundBreads = await Bread.find()
-//   // console.log('🚀 ~ file: breads_controller.js:9 ~ breads.get ~ foundBreads', foundBreads)
-//   res.render('index', {
-//       breads: foundBreads,
-//       bakers: foundBakers,
-//       title: 'Index Page',
-//     });
-// });
 
 // CREATE
 breads.post('/', async(req, res) => {
