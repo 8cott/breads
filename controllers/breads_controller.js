@@ -1,7 +1,6 @@
 const express = require('express')
 const breads = express.Router()
 const Bread = require('../models/bread.js')
-// somewhere at the top with the other dependencies 
 const Baker = require('../models/baker.js')
 
 // Index:
@@ -14,7 +13,6 @@ breads.get('/', async (req, res) => {
     title: 'Index Page'
   })
 })
-
 
 // CREATE
 breads.post('/', async(req, res) => {
@@ -67,9 +65,6 @@ breads.get('/:id', (req, res) => {
       })
 })
 
-
-
-
 // BONUS Doesn't work
 breads.get('/data/seed', (req, res) => {
   Bread.insertMany([breadSeed])
@@ -91,7 +86,6 @@ breads.put('/:id', async(req, res) => {
       res.redirect(`/breads/${req.params.id}`) 
     })
 })
-
 
 // DELETE
 breads.delete('/:id', async(req, res) => {
